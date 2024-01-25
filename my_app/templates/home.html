@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyTaskMate</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous">
+<style>
+   .navbar-brand,
+    .navbar-nav a {
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    .navbar-brand:hover,
+    .navbar-nav a:hover {
+      color: #17a2b8 !important;
+    }
+
+    .navbar-toggler {
+      border: 1px solid #fff;
+    }
+
+    .navbar-nav a:hover {
+      color: #17a2b8 !important;
+    }
+         body {
+            background: radial-gradient( #001f3f, #000033); /* Dark blue gradient, you can adjust colors */
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Use a shadow effect for the form and the table */
+        .shadow {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        /* Use a different color for the table header */
+        .table thead {
+            background-color: #f5af19;
+            color: white;
+        }
+
+        /* Use a different color for the odd rows of the table */
+        .table tbody tr:nth-child(odd) {
+            background-color: #f127e6;
+            color: white;
+        }
+    </style>
+    <script src="https://kit.fontawesome.com/3af7c6478f.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">MyTaskMate</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link active" aria-current="page" href="/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <!-- Task Form: Add a new touch to your to-do list -->
+            <form method="post" action="/add-todo" class="bg-light p-4 rounded shadow">
+                <!-- CSRF Protection: A secret token to keep your tasks secure -->
+                {% csrf_token %}
+                <!-- Heading: Let's plan your next move -->
+                <h2 class="mb-4 text-dark">Plan Your Next Move</h2>
+                <!-- Task Title: What's the name of your task? -->
+                <div class="mb-3">
+                    {{ form.title.label_tag }}
+                    {{ form.title }}
+                </div>
+                <!-- Priority Level: How important is this task? -->
+                <div class="mb-3">
+                    {{ form.priority.label_tag }}
+                    {{ form.priority }}
+                </div>
+                <!-- Task Status: Is it in progress, completed, or pending? -->
+                <div class="mb-3">
+                    {{ form.status.label_tag }}
+                    {{ form.status }}
+                </div>
+                <!-- Submit Button: Ready to conquer! -->
+                <button type="submit" class="btn btn-success btn-block" value="Add">Conquer Task</button>
+            </form>
+        </div>
+
+
+            <div class="col-md-8">
+                <!-- Create a table for displaying the existing tasks -->
+                <div class="bg-light p-4 rounded border shadow">
+                  <div>
+                      {% if todos %}
+                      <table class="table">
+                          <!-- Add a header row for the table -->
+                          <h2 class="mb-4 text-dark">Tasks for the day</h2>
+                          <thead >
+                          <tr>
+                              <th>
+                                    #
+                              </th>
+                              <th>
+                                    Title
+                              </th>
+                              <th>
+                                    Status
+                              </th>
+                              <th>
+                                    Priority
+                              </th>
+                              <th>
+                                   Actions
+                              </th>
+                          </tr>
+                          </thead>
+                          <!-- Add a body for the table -->
+                            <tbody>
+                                <!-- Loop through the tasks and display them in rows -->
+                                {% for todo in todos %}
+                                <tr>
+                                <td>{{forloop.counter}}</td>
+                                <td>{{todo.title}}</td>
+                                <td>{{todo.status}}</td>
+                                <td>{{todo.priority}}</td>
+                                    <td>
+                                        <a href="delete-todo/{{todo.id}}" class="btn " title="Delete"><i class="fa-solid fa-trash-can"></i></a>
+                                        {% if todo.status == 'Completed' %}
+                                        <a href="update-status/{{todo.id}}/Pending" class="btn " title="Mark Pending"><i class="fa-solid fa-clock"></i></a>
+                                        {%else%}
+                                        <a href="update-status/{{todo.id}}/Completed" class="btn " title="Mark Completed"><i class="fa-solid fa-check-to-slot"></i></a>
+
+                                        {%endif%}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+  </tbody>
+                      </table>
+                       {% else %}
+                        <!-- Display a message when there are no todos -->
+                        <p class="text-center">Let's get to work! No tasks found.</p>
+                    {% endif %}
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+<script src="https://kit.fontawesome.com/3af7c6478f.js" crossorigin="anonymous"></script>
+</body>
+
+</html>
